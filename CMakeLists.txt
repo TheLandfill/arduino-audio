@@ -1,0 +1,30 @@
+cmake_minimum_required(VERSION 3.13.0)
+if (WIN32)
+	set(CMAKE_GENERATOR_PLATFORM x64)
+endif(WIN32)
+project(audio-arduino)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CDD_STANDARD_REQUIRED ON)
+
+if(WIN32)
+set(__WINDOWS_DS__)
+endif()
+if(NOT WIN32)
+set(__LINUX_ALSA__)
+endif()
+
+include_directories("${CMAKE_SOURCE_DIR}/includes/")
+include_directories("${CMAKE_SOURCE_DIR}/vendors/rtaudio/")
+file(GLOB SOURCES "${CMAKE_SOURCE_DIR}/src/*.cpp")
+
+add_subdirectory(vendors)
+add_executable(audio-arduino "${SOURCES}")
+
+target_link_libraries(audio-arduino rtaudio)
+
+if(WIN32)
+	target_link_libraries(audio-arduino ole32 winmm dsound)
+endif()
+if(NOT WIN32)
+	target_link_libraries(audio-arduino asound pthread)
+endif()
